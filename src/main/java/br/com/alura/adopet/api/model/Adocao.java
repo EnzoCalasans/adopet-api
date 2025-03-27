@@ -13,32 +13,35 @@ import java.util.Objects;
 @Table(name = "adocoes")
 public class Adocao {
 
+    public Adocao() {
+    }
+
+    public Adocao(Tutor tutor, Pet pet, String motivo) {
+        this.tutor = tutor;
+        this.pet = pet;
+        this.motivo = motivo;
+        this.status = StatusAdocao.AGUARDANDO_AVALIACAO;
+        this.data = LocalDateTime.now();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "data")
     private LocalDateTime data;
 
-    @ManyToOne
-    @JsonBackReference("tutor_adocoes")
-    @JoinColumn(name = "tutor_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Tutor tutor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @OneToOne
-    @JoinColumn(name = "pet_id")
-    @JsonManagedReference("adocao_pets")
     private Pet pet;
 
-    @Column(name = "motivo")
     private String motivo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private StatusAdocao status;
 
-    @Column(name = "justificativa_status")
     private String justificativaStatus;
 
     @Override
@@ -58,24 +61,12 @@ public class Adocao {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public LocalDateTime getData() {
         return data;
     }
 
-    public void setData(LocalDateTime data) {
-        this.data = data;
-    }
-
     public Tutor getTutor() {
         return tutor;
-    }
-
-    public void setTutor(Tutor tutor) {
-        this.tutor = tutor;
     }
 
     public Pet getPet() {
@@ -88,10 +79,6 @@ public class Adocao {
 
     public String getMotivo() {
         return motivo;
-    }
-
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
     }
 
     public StatusAdocao getStatus() {
@@ -108,5 +95,14 @@ public class Adocao {
 
     public void setJustificativaStatus(String justificativaStatus) {
         this.justificativaStatus = justificativaStatus;
+    }
+
+    public void marcarComoAprovada() {
+        this.status = StatusAdocao.APROVADO;
+    }
+
+    public void marcarComoReprovada(String justificativa) {
+        this.status = StatusAdocao.REPROVADO;
+        this.justificativaStatus = justificativa;
     }
 }
